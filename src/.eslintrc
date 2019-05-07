@@ -1,0 +1,6 @@
+{
+  "extends": "@deboxsoft/devel/typescript-react",
+  "env": {
+    "browser": true
+  }
+}

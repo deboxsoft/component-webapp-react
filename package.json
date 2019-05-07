@@ -1,0 +1,74 @@
+{
+  "name": "@deboxsoft/component-webapp-react",
+  "version": "0.0.1",
+  "description": "",
+  "main": "lib/index.js",
+  "scripts": {
+    "build": "npm run build:cjs && npm run build:es && npm run build:typings",
+    "build:cjs": "rimraf libs && babel -x '.ts','.tsx' --ignore '**/__tests__/**' -d './libs' './src'",
+    "build:es": "rimraf es && cross-env ES_MODULES=true && babel -x '.ts','.tsx' --ignore '**/__tests__/**' -d './es' './src'",
+    "build:typings": "tsc -p tsconfig.typings.json",
+    "check": "npm run lint && tsc --noEmit",
+    "lint": "eslint --fix",
+    "start": "npm run styleguide",
+    "gh-pages": "./node_modules/.bin/gh-pages -d styleguide",
+    "precommit": "lint-staged",
+    "publish:docs": "npm run styleguide-build && npm run gh-pages",
+    "prepublishOnly": "npm run build",
+    "styleguide": "styleguidist server",
+    "styleguide:build": "NODE_ENV=production styleguidist build",
+    "test": "cross-env NODE_ENV=test jest src"
+  },
+  "lint-staged": {
+    "*.{js}": [
+      "prettier --write",
+      "git add"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ajainvivek/preact-fluid.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/core": "^7.4.0",
+    "@deboxsoft/babel-preset-devel": "^2.0.4",
+    "@deboxsoft/devel": "^2.1.3",
+    "@deboxsoft/devel-react": "^1.0.6",
+    "@deboxsoft/devel-typescript": "^0.0.6",
+    "@deboxsoft/eslint-config-devel": "^1.0.10",
+    "@types/jest": "^24.0.11",
+    "@types/lodash": "^4.14.123",
+    "@types/react-dom": "^16.8.3",
+    "@types/react-test-renderer": "^16.8.1",
+    "@types/styled-components": "^4.1.12",
+    "@typescript-eslint/eslint-plugin": "^1.4.2",
+    "@typescript-eslint/parser": "^1.5.0",
+    "eslint-plugin-react-hooks": "^1.6.0",
+    "gh-pages": "^2.0.1",
+    "husky": "^0.14.3",
+    "if-env": "^1.0.0",
+    "jest": "^24.5.0",
+    "jest-styled-components": "^6.3.1",
+    "lint-staged": "^6.0.0",
+    "plop": "^2.3.0",
+    "prettier": "^1.16.4",
+    "react": "^16.8.4",
+    "react-dom": "^16.8.6",
+    "react-styleguidist": "^9.0.4",
+    "react-testing-library": "^6.0.3",
+    "standard-version": "^6.0.1",
+    "styled-components": "^4.2.0",
+    "stylelint": "^9.10.1",
+    "stylelint-config-recommended": "^2.1.0",
+    "stylelint-config-styled-components": "^0.1.1",
+    "stylelint-processor-styled-components": "^1.5.2",
+    "typescript": "~3.3.0",
+    "webpack": "^4.29.6"
+  },
+  "dependencies": {
+    "immutable": "^4.0.0-rc.12"
+  }
+}

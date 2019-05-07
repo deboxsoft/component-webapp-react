@@ -1,0 +1,17 @@
+{
+  "presets": [
+    [
+      "@deboxsoft/babel-preset-devel",
+      {
+        "react": {
+          "enable": true
+        },
+        "removePropTypes": false
+      }
+    ],
+    "@deboxsoft/devel-typescript/babel/preset"
+  ],
+  "plugins": [
+    "babel-plugin-styled-components"
+  ]
+}

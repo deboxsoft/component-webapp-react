@@ -1,0 +1,11 @@
+node_modules
+/build
+/styleguide/*
+!/styleguide/setup.js
+/*.log
+*.lock*
+.idea
+.vscode
+libs
+.npmrc
+/coverage
