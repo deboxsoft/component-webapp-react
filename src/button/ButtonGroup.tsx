@@ -1,37 +1,30 @@
+import React from 'react';
 import styled, { css } from 'styled-components/macro';
-import { StyledProps } from '../types';
-import { ButtonGroupTheme } from '../theme';
+import { FunctionComponentWithDefault, StyledThemeTypeProps } from '../types';
+import { defaultProps } from './Button';
+import { ButtonTheme } from '../theme';
+import { ThemeAllType, Size } from '../utils/types';
+import { layoutUtils } from '../utils';
 
-interface Props extends StyledProps<ButtonGroupTheme> {
-  lg?: boolean;
-  sm?: boolean;
+interface ButtonGroupStyledProps extends StyledThemeTypeProps<ButtonTheme, ThemeAllType> {
+  size: keyof Size;
   vertical?: boolean;
 }
 
-const size = (props: Props) => {
-  const { font, padding } = props.theme.buttonGroup;
-  if (props.lg) {
-    return css`
-      padding: ${padding.lg};
-      font-size: ${font.size.lg};
-      line-height: 1.5;
-    `;
-  } else if (props.sm) {
-    return css`
-      padding: ${padding.sm};
-      font-size: ${font.size.sm};
-      line-height: 1.5;
-    `;
-  }
+type DefaultProps = ButtonGroupStyledProps;
+type ButtonGroupProps = Partial<ButtonGroupStyledProps>;
 
+const sizeCss = ({ theme, size }: ButtonGroupStyledProps) => {
+  const paddingSize = theme.buttonGroup.padding[size];
+  const fontSize = theme.buttonGroup.font.size;
   return css`
-    padding: ${padding.default};
-    font-size: ${font.size.default};
+    padding: ${paddingSize && layoutUtils.positioning(paddingSize)};
+    font-size: ${fontSize && fontSize[size]};
     line-height: 1.5;
   `;
 };
 
-const vertical = (props: Props) => {
+const verticalCss = (props: ButtonGroupStyledProps) => {
   if (props.vertical) {
     return css`
       flex-direction: column;
@@ -65,7 +58,7 @@ const vertical = (props: Props) => {
   `;
 };
 
-export const ButtonGroup = styled.div<Props>`
+export const ButtonGroup = styled.div<ButtonGroupStyledProps>`
   position: relative;
   display: inline-flex;
   vertical-align: middle;
@@ -76,9 +69,9 @@ export const ButtonGroup = styled.div<Props>`
     &:hover {
       z-index: 1;
     }
-    ${props => size(props)};
+    ${sizeCss};
   }
-  ${props => vertical(props)};
+  ${verticalCss};
 `;
 
-ButtonGroup.defaultProps = {};
+ButtonGroup.defaultProps = defaultProps;

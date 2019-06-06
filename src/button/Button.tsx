@@ -1,34 +1,35 @@
 import React from 'react';
 import styled, { css } from 'styled-components/macro';
 import * as keyframes from '../keyframes';
-import { OnClickedProps, StyledProps, FunctionComponentWithDefault } from '../types';
-import { classNames, Devices, screenMaxWidth } from '../utils';
-import { ButtonTheme, ThemeAllType } from '../theme';
+import { FunctionComponentWithDefault, OnClickedProps, StyledThemeTypeProps } from '../types';
+import { classNames, Devices, screenMaxWidth, layoutUtils } from '../utils';
+import { ThemeAllType, Size } from '../utils/types';
+import { ButtonTheme } from '../theme';
 
-interface StyleButtonProps extends StyledProps<ButtonTheme, ThemeAllType> {
+interface ButtonStyledProps extends StyledThemeTypeProps<ButtonTheme, ThemeAllType> {
   active?: boolean;
-  outline?: boolean;
-  disabled?: boolean;
-  pill?: boolean;
-  sm?: boolean;
-  noRadius?: boolean;
-  split?: boolean;
-  lg?: boolean;
-  block?: boolean;
-  toggleCollapse?: boolean;
   badge?: { color?: string; value?: string | number };
+  block?: boolean;
+  disabled?: boolean;
   expandScreen?: Devices;
+  noRadius?: boolean;
+  outline?: boolean;
+  pill?: boolean;
+  size: keyof Size;
+  split?: boolean;
+  toggleCollapse?: boolean;
 }
 
-export interface ButtonProps extends StyleButtonProps, OnClickedProps {
+export interface ButtonProps extends Partial<ButtonStyledProps>, OnClickedProps {
   className?: string;
   type: 'reset' | 'button' | 'submit';
   dropdownToggle?: boolean;
   clicked?: boolean;
-  disabled?: boolean;
 }
 
-const display = ({ block, theme }: StyleButtonProps) => {
+type DefaultProps = ButtonStyledProps;
+
+const displayCss = ({ block, theme }: ButtonStyledProps) => {
   if (block) {
     return css`
       display: block;
@@ -44,61 +45,31 @@ const display = ({ block, theme }: StyleButtonProps) => {
   `;
 };
 
-const boxShadow = ({ themeType, theme }: StyleButtonProps) => {
+const boxShadowCss = ({ themeType, theme }: ButtonStyledProps) => {
   const colors = theme.button.colors[themeType];
   return css`
     box-shadow: 0 0 0 0.2rem ${colors && colors.boxShadow};
   `;
 };
 
-const padding = ({ split, sm, lg, theme }: StyleButtonProps) => {
+const paddingCss = ({ split, size, theme }: ButtonStyledProps) => {
   const paddingTheme = theme.button.padding;
   if (split && paddingTheme.split) {
-    if (sm && paddingTheme.split.sm) {
-      return css`
-        padding: 0;
-        padding-right: ${paddingTheme.split.sm.right};
-        padding-left: ${paddingTheme.split.sm.left};
-        &::after {
-          margin-left: 0;
-        }
-      `;
-    } else if (lg && paddingTheme.split.lg) {
-      return css`
-        padding: 0;
-        padding-right: ${paddingTheme.split.lg.right};
-        padding-left: ${paddingTheme.split.lg.left};
-        &::after {
-          margin-left: 0;
-        }
-      `;
-    } else if (paddingTheme.split.default) {
-      // @ts-ignore
-      return css`
-        padding: 0;
-        padding-right: ${paddingTheme.split.default.right};
-        padding-left: ${paddingTheme.split.default.left};
-        &::after {
-          margin-left: 0;
-        }
-      `;
-    }
-  } else if (lg) {
+    const paddingSplit = paddingTheme.split[size];
     return css`
-      padding: ${paddingTheme.lg};
-    `;
-  } else if (sm) {
-    return css`
-      padding: ${paddingTheme.sm};
+      padding: ${paddingSplit && layoutUtils.positioning(paddingSplit)};
+      &::after {
+        margin-left: 0;
+      }
     `;
   }
-
+  const padding = paddingTheme[size];
   return css`
-    padding: ${paddingTheme.default};
+    padding: ${padding && layoutUtils.positioning(padding)};
   `;
 };
 
-const blockDisplay = ({ block, theme }: StyleButtonProps) => {
+const blockDisplay = ({ block, theme }: ButtonStyledProps) => {
   if (block) {
     return css`
       display: block;
@@ -114,13 +85,13 @@ const blockDisplay = ({ block, theme }: StyleButtonProps) => {
   `;
 };
 
-const cursor = ({ disabled }: StyleButtonProps) =>
+const cursor = ({ disabled }: ButtonStyledProps) =>
   !disabled &&
   css`
     cursor: pointer;
   `;
 
-const color = ({ themeType, outline, theme, disabled }: StyleButtonProps) => {
+const color = ({ themeType, outline, theme, disabled }: ButtonStyledProps) => {
   const colors = theme.button.colors[themeType];
   if (outline) {
     if (disabled) {
@@ -140,23 +111,14 @@ const color = ({ themeType, outline, theme, disabled }: StyleButtonProps) => {
   `;
 };
 
-const fontSize = ({ sm, lg, theme }: StyleButtonProps) => {
-  if (lg) {
-    return css`
-      font-size: ${theme.button.font.size.lg};
-    `;
-  } else if (sm) {
-    return css`
-      font-size: ${theme.button.font.size.sm};
-    `;
-  }
-
+const fontSizeCss = ({ size = 'default', theme }: ButtonStyledProps) => {
+  const fontSize = theme.button.font.size;
   return css`
-    font-size: ${theme.button.font.size.default};
+    font-size: ${fontSize && fontSize[size]};
   `;
 };
 
-const border = ({ active, disabled, outline, theme, themeType }: StyleButtonProps) => {
+const border = ({ active, disabled, outline, theme, themeType }: ButtonStyledProps) => {
   const colors = theme.button.colors[themeType];
   if (active) {
     return css`
@@ -180,31 +142,22 @@ const border = ({ active, disabled, outline, theme, themeType }: StyleButtonProp
   `;
 };
 
-const borderRadius = ({ pill, noRadius, theme, sm, lg }: StyleButtonProps) => {
+const borderRadiusCss = ({ pill, noRadius, theme }: ButtonStyledProps) => {
   if (pill) {
     return css`
       border-radius: ${theme.button.borderRadius.pill};
     `;
   } else if (noRadius) {
     return css`
-      border-radius: ${theme.button.borderRadius.noRadius};
-    `;
-  } else if (sm) {
-    return css`
-      border-radius: ${theme.button.borderRadius.sm};
-    `;
-  } else if (lg) {
-    return css`
-      border-radius: ${theme.button.borderRadius.lg};
+      border-radius: 0;
     `;
   }
-
   return css`
     border-radius: ${theme.button.borderRadius.default};
   `;
 };
 
-const buttonToggleCollapse = ({ expandScreen = 'tablet', toggleCollapse, theme }: StyleButtonProps) => {
+const buttonToggleCollapseCss = ({ expandScreen = 'tablet', toggleCollapse, theme }: ButtonStyledProps) => {
   if (toggleCollapse) {
     const { toggle } = theme.button.font;
     return css`
@@ -218,7 +171,7 @@ const buttonToggleCollapse = ({ expandScreen = 'tablet', toggleCollapse, theme }
   return '';
 };
 
-const backgroundColor = ({ themeType, active, outline, disabled, theme }: StyleButtonProps) => {
+const backgroundColorCss = ({ themeType, active, outline, disabled, theme }: ButtonStyledProps) => {
   const colors = theme.button.colors[themeType];
   if (active) {
     return css`
@@ -250,7 +203,7 @@ const backgroundColor = ({ themeType, active, outline, disabled, theme }: StyleB
   `;
 };
 
-export const buttonStyled = (props: StyleButtonProps) => css`
+const ButtonStyled = styled.button<ButtonStyledProps>`
   position: relative;
   font-weight: 400;
   line-height: 1.5;
@@ -264,24 +217,24 @@ export const buttonStyled = (props: StyleButtonProps) => css`
   white-space: nowrap;
   &:focus {
     outline: 0;
-    ${boxShadow(props)}
+    ${props => boxShadowCss(props)}
   }
     &:hover,
   &:focus {
     text-decoration: none;
-    ${border(props)}
-    ${backgroundColor(props)}
-    ${color(props)}
-    ${cursor(props)}
+    ${props => border(props)}
+    ${props => backgroundColorCss(props)}
+    ${props => color(props)}
+    ${props => cursor(props)}
   };
-  ${border(props)}
-  ${backgroundColor(props)}
-  ${borderRadius(props)}
-  ${display(props)}
-  ${buttonToggleCollapse(props)}
-  ${fontSize(props)}
-  ${color(props)}
-  ${padding(props)}
+  ${props => border(props)}
+  ${props => backgroundColorCss(props)}
+  ${props => borderRadiusCss(props)}
+  ${props => displayCss(props)}
+  ${props => buttonToggleCollapseCss(props)}
+  ${props => fontSizeCss(props)}
+  ${props => color(props)}
+  ${props => paddingCss(props)}
 
   &.disabled {
     opacity: 0.65;
@@ -295,7 +248,10 @@ export const buttonStyled = (props: StyleButtonProps) => css`
     bottom: -1px;
     right: -1px;
     border-radius: inherit;
-    border: 0 solid ${_props => _props.theme.primaryColor};
+    border: 0 solid ${_props => {
+      const colors = _props.theme.button.colors.default;
+      return colors && colors.borderColor;
+    }};
     opacity: 0.4;
     animation: ${keyframes.buttonEffect} 0.4s;
     display: block;
@@ -329,7 +285,10 @@ export const buttonStyled = (props: StyleButtonProps) => css`
 
   &.loading::after {
     animation: ${keyframes.loading} 500ms infinite linear;
-    border: 2px solid ${_props => _props.theme.primaryColorDark};
+    border: 2px solid ${props => {
+      const colors = props.theme.button.colors.default;
+      return colors && colors.borderColor;
+    }};
     border-radius: 50%;
     border-right-color: transparent;
     border-top-color: transparent;
@@ -344,10 +303,6 @@ export const buttonStyled = (props: StyleButtonProps) => css`
     width: 14px;
     z-index: 1;
   }
-`;
-
-const ButtonStyled = styled.button<StyleButtonProps>`
-  ${buttonStyled}
 `;
 
 export const Button: FunctionComponentWithDefault<ButtonProps> = ({
@@ -371,19 +326,36 @@ export const Button: FunctionComponentWithDefault<ButtonProps> = ({
   );
 };
 
-Button.defaultProps = {
-  type: 'button',
+export const defaultProps: DefaultProps = {
   themeType: 'default',
+  size: 'default',
   theme: {
     button: {
       font: {
-        size: {}
+        size: {},
+        weight: {}
       },
       borderRadius: {},
       colors: {},
       margin: {},
       padding: {},
       border: {}
+    },
+    buttonGroup: {
+      font: {
+        size: {},
+        weight: {}
+      },
+      colors: {},
+      borderRadius: {},
+      margin: {},
+      padding: {},
+      border: {}
     }
   }
+};
+
+ButtonStyled.defaultProps = defaultProps;
+Button.defaultProps = {
+  type: 'button'
 };
