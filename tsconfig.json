@@ -1,34 +1,20 @@
 {
   "compilerOptions": {
-    "baseUrl": "./src",
-    // Target latest version of ECMAScript.
+    "baseUrl": "./",
     "target": "esnext",
-    "module": "es2015",
     "declaration": true,
-    // Search under node_modules for non-relative imports.
     "moduleResolution": "node",
-    // Process & infer types from .js files.
-    "allowJs": true,
-    // Don't emit; allow Babel to transform files.
-    "noEmit": true,
-    // Enable strictest settings like strictNullChecks & noImplicitAny.
     "strict": true,
-    // Disallow features that require cross-file information for emit.
-    // "isolatedModules": true,
-    // Import non-ES modules as default imports.
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "jsx": "react",
+    "jsx": "preserve",
     "strictPropertyInitialization": false,
-    "outDir": "libs",
-    // "emitDeclarationOnly": true,
+    "outDir": "build/libs",
+    "skipLibCheck": true,
+    "paths": {
+      "*": ["types/*"]
+    }
   },
-  "include": [
-    "src",
-    "types"
-  ],
-  "exclude": [
-    "__tests__",
-    "__mocks__"
-  ]
+  "include": ["src", "types"],
+  "exclude": ["**/__tests__", "**/__mocks__"]
 }
