@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { Chunk, HeadChunk, NaviError, Route, TitleChunk, ViewChunk } from 'navi';
 import { NavigationContext, NavigationValue } from './NavigationContext';
@@ -11,7 +11,7 @@ export interface ViewProps {
   children?: (view: any, route: Route) => React.ReactNode;
 
   disableScrolling?: boolean;
-  scrolHashlBehavior?: ScrollHashBehavior;
+  scrollHashBehavior?: ScrollHashBehavior;
 
   /**
    * The first Chunk that matches this will be consumed, along with
@@ -30,11 +30,11 @@ export const View: React.SFC<ViewProps> = function View(props: ViewProps) {
   );
 };
 View.defaultProps = {
-  scrolHashlBehavior: 'smooth',
+  scrollHashBehavior: 'smooth',
   where: (chunk: Chunk) => chunk.type === 'view'
 };
 
-interface InnerViewProps extends ViewProps {
+export interface InnerViewProps extends ViewProps {
   context: NavigationValue;
 }
 
@@ -57,43 +57,21 @@ function createTitleElement(str: string) {
   return title;
 }
 
-class InnerView extends React.Component<InnerViewProps, InnerViewState> {
-  static getDerivedStateFromProps(
-    props: InnerViewProps,
-    state: InnerViewState
-  ): Partial<InnerViewState> | null {
-    const route = props.context.steadyRoute || props.context.busyRoute;
-
-    // If there's no steady route, then we'll need to wait until a steady
-    // route becomes available.
-    if (!route) {
-      return null;
-    }
-
-    // Bail if nothing has changed
-    if (
-      state.route === route &&
-      state.childContext &&
-      state.childContext.busyRoute === props.context.busyRoute
-    ) {
-      return null;
-    }
-
-    const unconsumedChunks = props.context.unconsumedSteadyRouteChunks || route.chunks;
-
-    let index = (props.where && unconsumedChunks.findIndex(props.where)) || -1;
-    const errorSearchChunks = index === -1 ? unconsumedChunks : unconsumedChunks.slice(0, index + 1);
-    const errorChunk = errorSearchChunks.find(chunk => chunk.type === 'error');
-    if (errorChunk) {
-      return {
-        error: errorChunk.error || new Error('Unknown routing error')
-      };
-    }
-    if (index === -1) {
-      return null;
-    }
+const buildState = ({ context, where }: InnerViewProps, state: InnerViewState, route?: Route<any>) => {
+  if (!route) {
+    return;
+  }
+  const unconsumedChunks = context.unconsumedSteadyRouteChunks || route.chunks;
+  let index = (where && unconsumedChunks.findIndex(where)) || -1;
+  const errorSearchChunks = index === -1 ? unconsumedChunks : unconsumedChunks.slice(0, index + 1);
+  const errorChunk = errorSearchChunks.find(chunk => chunk.type === 'error');
+  let stateResult: InnerViewState;
+  if (errorChunk) {
+    stateResult = Object.assign(state, {
+      error: errorChunk.error || new Error('Unknown routing error')
+    });
+  } else if (index > -1) {
     const chunk = unconsumedChunks[index] as ViewChunk;
-
     // Find any unconsumed head content that comes before and after this
     // Chunk.
     const headAndTitleChunks = unconsumedChunks
@@ -101,7 +79,7 @@ class InnerView extends React.Component<InnerViewProps, InnerViewState> {
       .filter(_chunk => _chunk.type === 'title' || _chunk.type === 'head') as ((HeadChunk | TitleChunk)[]);
     for (index += 1; index < unconsumedChunks.length; index++) {
       const _chunk = unconsumedChunks[index];
-      if (_chunk.type === 'busy' || _chunk.type === 'error' || (props.where && props.where(_chunk))) {
+      if (_chunk.type === 'busy' || _chunk.type === 'error' || (where && where(_chunk))) {
         break;
       }
       if (_chunk.type === 'title' || _chunk.type === 'head') {
@@ -109,129 +87,140 @@ class InnerView extends React.Component<InnerViewProps, InnerViewState> {
       }
     }
 
-    return {
+    stateResult = {
       chunk,
       headAndTitleChunks,
       route,
       childContext: {
-        ...props.context,
-        busyRoute: props.context.busyRoute,
+        ...context,
         unconsumedSteadyRouteChunks: unconsumedChunks.slice(index)
       }
     };
+    return stateResult;
   }
+};
 
-  componentDidMount() {
-    this.handleUpdate();
-  }
+export const useUpdateRoute = (props: InnerViewProps) => {
+  const route = props.context.steadyRoute || props.context.busyRoute;
+  const initState = buildState(props, { childContext: props.context }, route);
+  const [state, setState] = useState<InnerViewState | undefined>(initState);
+  const prevRoute = useRef(state && state.route);
+  useEffect(() => {
+    function updateRoute() {
+      const nextRoute = state && state.route;
+      if (prevRoute.current !== nextRoute) {
+        if (nextRoute && nextRoute.type !== 'busy') {
+          if (
+            prevRoute.current &&
+            nextRoute.url.pathname === prevRoute.current.url.pathname &&
+            nextRoute.url.search === prevRoute.current.url.search &&
+            nextRoute.url.hash === prevRoute.current.url.hash
+          ) {
+            return;
+          }
 
-  componentDidUpdate(prevProps: InnerViewProps, prevState: InnerViewState) {
-    this.handleUpdate(prevState);
-  }
-
-  handleUpdate(prevState?: InnerViewState) {
-    const { route } = this.state;
-    if (route && (!prevState || !prevState.route || prevState.route !== route)) {
-      const prevRoute = prevState && prevState.route;
-      const nextRoute = route;
-
-      if (nextRoute && nextRoute.type !== 'busy') {
-        if (
-          prevRoute &&
-          nextRoute.url.pathname === prevRoute.url.pathname &&
-          nextRoute.url.search === prevRoute.url.search &&
-          nextRoute.url.hash === prevRoute.url.hash
-        ) {
-          return;
+          if (
+            !props.disableScrolling &&
+            (!prevRoute.current ||
+              !prevRoute.current.url ||
+              prevRoute.current.url.hash !== nextRoute.url.hash ||
+              prevRoute.current.url.pathname !== nextRoute.url.pathname)
+          ) {
+            scrollToHash(
+              nextRoute.url.hash,
+              prevRoute.current &&
+                prevRoute.current.url &&
+                prevRoute.current.url.pathname === nextRoute.url.pathname
+                ? props.scrollHashBehavior
+                : 'auto'
+            );
+          }
         }
-
-        const { scrolHashlBehavior, disableScrolling } = this.props;
-        if (
-          !disableScrolling &&
-          (!prevRoute ||
-            !prevRoute.url ||
-            prevRoute.url.hash !== nextRoute.url.hash ||
-            prevRoute.url.pathname !== nextRoute.url.pathname)
-        ) {
-          scrollToHash(
-            nextRoute.url.hash,
-            prevRoute && prevRoute.url && prevRoute.url.pathname === nextRoute.url.pathname
-              ? scrolHashlBehavior
-              : 'auto'
-          );
-        }
       }
     }
+  });
+
+  if (
+    state &&
+    !(
+      state.route === route &&
+      (state.childContext && state.childContext.busyRoute) === props.context.busyRoute
+    )
+  ) {
+    setState(buildState(props, state));
   }
+  return state || initState;
+};
 
-  render() {
-    const { error, childContext, route: route1 } = this.state;
-    if (error) {
-      throw error;
-    }
-
-    const { chunk, headAndTitleChunks } = this.state;
-    const { context, children } = this.props;
-    if (!chunk || !chunk.view) {
-      const { Suspense } = React as any;
-      if (Suspense) {
-        throw context.navigation.getRoute();
-      } else {
-        // eslint-disable-next-line no-console
-        console.warn(
-          `A Navi <View> component was rendered before your Navigation store's state had become steady. Consider waiting before rendering with "await navigation.getRoute()", or upgrading React to version 16.6 to handle this with Suspense.`
-        );
-        return null;
-      }
-    }
-
-    const helmet =
-      headAndTitleChunks &&
-      headAndTitleChunks.length &&
-      React.createElement(
-        Helmet,
-        null,
-        ...headAndTitleChunks.map(_chunk =>
-          _chunk.type === 'title'
-            ? createTitleElement(_chunk.title)
-            : _chunk.head.type === React.Fragment || _chunk.head.type === 'head'
-            ? _chunk.head.props.children
-            : _chunk.head
-        )
-      );
-    let content: React.ReactNode;
-
-    let render: undefined | ((view: any, route: Route) => React.ReactNode);
-    if (children) {
-      render = children as (view: any, route: Route) => React.ReactNode;
-      if (typeof render !== 'function') {
-        throw new Error(
-          `A Navi <View> expects any children to be a function, but instead received "${render}".`
-        );
-      }
-      content = route1 && children(chunk.view, route1);
-    } else if (chunk.view) {
-      if (typeof chunk.view === 'function') {
-        content = React.createElement(chunk.view, { route: context.steadyRoute });
-      } else if (typeof chunk.view === 'string' || React.isValidElement(chunk.view)) {
-        content = chunk.view;
-      }
+export const InnerView = (props: InnerViewProps) => {
+  const state = useUpdateRoute(props);
+  if (!state) {
+    return null;
+  }
+  const childContext: NavigationValue = state.childContext || {
+    navigation: {}
+  };
+  const { chunk, route, error, headAndTitleChunks } = state;
+  const { context, children } = props;
+  if (!chunk || !chunk.view) {
+    const { Suspense } = React as any;
+    if (Suspense) {
+      throw context.navigation.getRoute();
     } else {
+      // eslint-disable-next-line no-console
+      console.warn(
+        `A Navi <View> component was rendered before your Navigation store's state had become steady. Consider waiting before rendering with "await navigation.getRoute()", or upgrading React to version 16.6 to handle this with Suspense.`
+      );
+      return null;
+    }
+  }
+
+  const helmet =
+    headAndTitleChunks &&
+    headAndTitleChunks.length &&
+    React.createElement(
+      Helmet,
+      null,
+      ...headAndTitleChunks.map(_chunk =>
+        _chunk.type === 'title'
+          ? createTitleElement(_chunk.title)
+          : _chunk.head.type === React.Fragment || _chunk.head.type === 'head'
+          ? _chunk.head.props.children
+          : _chunk.head
+      )
+    );
+  let content: React.ReactNode;
+
+  let render: undefined | ((view: any, route: Route) => React.ReactNode);
+  if (children) {
+    render = children as (view: any, route: Route) => React.ReactNode;
+    if (typeof render !== 'function') {
       throw new Error(
-        "A Navi <View> was not able to find a `children` prop, and was unable to find any body or head content in the consumed Route Chunk's `content`."
+        `A Navi <View> expects any children to be a function, but instead received "${render}".`
       );
     }
-
-    return (
-      <NavigationContext.Provider value={childContext}>
-        {helmet || null}
-        {// Clone the content to force a re-render even if content hasn't
-        // changed, as Provider is a PureComponent.
-        React.isValidElement(content) ? React.cloneElement(content) : content}
-      </NavigationContext.Provider>
+    content = route && children(chunk.view, route);
+  } else if (chunk.view) {
+    if (typeof chunk.view === 'function') {
+      content = React.createElement(chunk.view, { route: context.steadyRoute });
+    } else if (typeof chunk.view === 'string' || React.isValidElement(chunk.view)) {
+      content = chunk.view;
+    }
+  } else {
+    throw new Error(
+      "A Navi <View> was not able to find a `children` prop, and was unable to find any body or head content in the consumed Route Chunk's `content`."
     );
   }
-}
+
+  return (
+    <NavigationContext.Provider value={childContext}>
+      {helmet || null}
+      {// Clone the content to force a re-render even if content hasn't
+      // changed, as Provider is a PureComponent.
+      React.isValidElement(content) ? React.cloneElement(content) : content}
+    </NavigationContext.Provider>
+  );
+};
 
 export class MissingChunk extends NaviError {
   context: NavigationValue;

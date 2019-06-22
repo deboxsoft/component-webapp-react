@@ -3,49 +3,7 @@ import { createURLDescriptor, joinPaths, modifyTrailingSlash, Navigation, URLDes
 import { NavigationContext, NavigationValue } from './NavigationContext';
 import { scrollToHash } from './ScrollHash';
 import { StyledThemeTypeProps } from '../types';
-
-export interface LinkProps {
-  active?: boolean;
-  activeClassName?: string;
-  activeStyle?: object;
-  children?: any;
-  className?: string;
-  disabled?: boolean;
-  exact?: boolean;
-  hidden?: boolean;
-  href: string | Partial<URLDescriptor>;
-  id?: string;
-  lang?: string;
-  prefetch?: boolean;
-  ref?: React.Ref<HTMLAnchorElement>;
-  rel?: string;
-  style?: object;
-  tabIndex?: number;
-  target?: string;
-  title?: string;
-  onClick?: React.MouseEventHandler<HTMLAnchorElement>;
-
-  render?: (props: LinkRendererProps) => any;
-}
-
-export interface LinkRendererProps {
-  anchorProps: LinkContext;
-  active: boolean;
-  activeClassName?: string;
-  activeStyle?: object;
-  children: any;
-  className?: string;
-  disabled?: boolean;
-  tabIndex?: number;
-  hidden?: boolean;
-  href: string;
-  id?: string;
-  lang?: string;
-  style?: object;
-  target?: string;
-  title?: string;
-  onClick: React.MouseEventHandler<any>;
-}
+import { LinkProps, LinkRendererProps } from './types';
 
 export type LinkAnchorProps = LinkContext;
 
@@ -64,20 +22,19 @@ export interface LinkContext {
 }
 
 export class LinkAnchor extends React.Component<React.AnchorHTMLAttributes<HTMLAnchorElement>> {
-  renderChildren = (context: LinkContext) => {
-    let handleClick: React.MouseEventHandler<HTMLAnchorElement> = context.onClick;
-    const { onClick } = this.props;
+  renderChildren = ({ onClick: onClickContext, href }: LinkContext) => {
+    let handleClick: React.MouseEventHandler<HTMLAnchorElement> = onClickContext;
+    const { onClick, ...attribs } = this.props;
     if (onClick) {
       handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
         onClick && onClick(e);
         if (!e.defaultPrevented) {
-          context.onClick(e);
+          onClickContext(e);
         }
       };
     }
-
     // eslint-disable-next-line jsx-a11y/anchor-has-content,jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions
-    return <a {...context} {...this.props} onClick={handleClick} />;
+    return <a href={href} {...attribs} onClick={handleClick} />;
   };
 
   render() {

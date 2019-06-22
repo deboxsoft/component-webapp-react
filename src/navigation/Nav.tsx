@@ -1,15 +1,50 @@
-import React from 'react';
-import styled, { css, ThemeConsumer } from 'styled-components/macro';
+import React, { useContext } from 'react';
+import styled, { css, ThemeContext } from 'styled-components/macro';
 import { FunctionComponentWithDefault, ImagesResponsive, StyledThemeProps } from '../types';
-import { NavStyledProps, navTheme } from './types';
-import { layoutUtils } from '../utils';
+import { NavStyledProps, navTheme, NavTheme } from './types';
+import { layoutUtils, screenMaxWidth } from '../utils';
 
-type DefaultProps = NavStyledProps;
+interface NavProps extends Partial<NavStyledProps> {
+  children: React.ReactNode;
+}
 
-export const Nav = styled.div<NavStyledProps>`
+const collapseCss = ({ theme, collapse, expand, hidden }: NavStyledProps) => {
+  if (expand && collapse) {
+    if (!hidden) {
+      return screenMaxWidth[expand]`
+        display: flex;
+        flex-basis: auto;
+        flex-direction: column;
+        & > a {
+          padding: ${theme.collapse.padding && layoutUtils.positioning(theme.collapse.padding)};
+          flex: 1;
+          text-align: left;
+        };
+    `;
+    } else {
+      return screenMaxWidth[expand]`
+        display: none;
+        flex-basis: auto;
+        flex-direction: column;
+      `;
+    }
+  }
+  return '';
+};
+
+const VerticalCss = ({ type }: NavStyledProps) =>
+  type === 'vertical' &&
+  css`
+    flex-direction: column;
+  `;
+
+export const NavStyled = styled.nav<NavStyledProps>`
   display: flex;
   flex-wrap: wrap;
-  padding: ${({ theme }) => theme.padding && layoutUtils.positioning(theme.padding)};
+  padding: ${({ theme, size }) => {
+    const padding = theme.padding[size];
+    return padding && layoutUtils.positioning(padding);
+  }};
   margin: ${({ theme }) => theme.margin && layoutUtils.positioning(theme.margin)};
   list-style: none;
   & > a {
@@ -25,12 +60,12 @@ export const Nav = styled.div<NavStyledProps>`
       }
     }};
     justify-content: ${({ theme, type }) => {
-      if (type === 'start') {
-        return 'flex-start';
-      } else if (type === 'center') {
+      if (type === 'center') {
         return 'center';
       } else if (type === 'end') {
         return 'flex-end';
+      } else {
+        return 'flex-start';
       }
     }};
     text-align: ${({ theme, type }) => (type === 'justified' || type === 'fill') && 'center'};
@@ -39,8 +74,20 @@ export const Nav = styled.div<NavStyledProps>`
   &:last-child {
     flex: 1;
   }
+  ${collapseCss}
+  ${VerticalCss}
 `;
 
-Nav.defaultProps = {
-  theme: navTheme
+NavStyled.defaultProps = {
+  theme: navTheme,
+  size: 'default'
+};
+export const Nav = ({ children, theme: themeProps, ...attribs }: NavProps) => {
+  const themeContext = useContext(ThemeContext);
+  const theme = themeProps || themeContext.nav;
+  return (
+    <NavStyled theme={theme} {...attribs}>
+      {children}
+    </NavStyled>
+  );
 };

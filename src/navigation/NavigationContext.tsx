@@ -52,7 +52,6 @@ export const NavigationProvider = ({ children, navigation, scrollHashBehavior }:
   const [navigationState, setNavigationState] = useState<NavigationProviderState>(() => {
     return createNavigationState(navigation, navigation.getCurrentValue());
   });
-
   useEffect(() => {
     if (!navigation) {
       throw new Error(`A <NavigationProvider> component must receive a "navigation" prop.`);
@@ -81,7 +80,7 @@ export const NavigationProvider = ({ children, navigation, scrollHashBehavior }:
 
   return (
     <ScrollHash behavior={scrollHashBehavior}>
-      <NavigationContext.Provider value={navigationState}>{children}</NavigationContext.Provider>;
+      <NavigationContext.Provider value={navigationState}>{children}</NavigationContext.Provider>
     </ScrollHash>
   );
 };

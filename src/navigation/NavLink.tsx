@@ -1,11 +1,13 @@
 import React, { useContext } from 'react';
 import styled, { css, ThemeContext } from 'styled-components/macro';
 import { ImagesResponsive, StyledThemeProps } from '../types';
-import { navLinkTheme, NavLinkStyledProps } from './types';
+import { NavLinkStyledProps, NavLinkTheme, navLinkTheme } from './types';
 import { Link } from './Link';
 import { layoutUtils } from '../utils';
 
-type NavLinkProps = Partial<NavLinkStyledProps>;
+interface NavLinkProps extends Partial<NavLinkStyledProps> {
+  children: React.ReactNode;
+}
 
 const colorsCss = ({ theme, disabled, active }: NavLinkStyledProps) => {
   const { colors } = theme;
@@ -54,8 +56,8 @@ NavLinkStyled.defaultProps = {
   theme: navLinkTheme
 };
 
-export const NavLink = ({ theme: _theme, ...attribs }: NavLinkProps) => {
+export const NavLink = ({ theme: themeProps, ...attribs }: NavLinkProps) => {
   const themeContext = useContext(ThemeContext);
-  const theme = _theme || themeContext.navLink;
+  const theme = themeProps || themeContext.navLink;
   return <NavLinkStyled theme={theme} {...attribs} />;
 };
