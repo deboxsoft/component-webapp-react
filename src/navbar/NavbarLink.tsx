@@ -3,7 +3,7 @@ import styled, { css, ThemeContext, ThemeProviderProps } from 'styled-components
 import { NavbarLinkStyledProps, navbarLinkTheme, NavbarLinkTheme } from './types';
 import { NavLinkStyled } from '../navigation/NavLink';
 
-interface NavbarLinkProps extends NavbarLinkStyledProps {
+interface NavbarLinkProps extends Partial<NavbarLinkStyledProps> {
   children?: string;
 }
 
