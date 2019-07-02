@@ -1,3 +1,0 @@
-{
-  "extends": ["@deboxsoft/devel/typescript-react"]
-}
