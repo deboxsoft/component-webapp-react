@@ -3,16 +3,18 @@
     "baseUrl": "./",
     "target": "esnext",
     "declaration": true,
+    "declarationDir": "./build",
     "moduleResolution": "node",
     "strict": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "jsx": "preserve",
     "strictPropertyInitialization": false,
-    "outDir": "build/libs",
     "skipLibCheck": true,
+    "emitDeclarationOnly": true,
     "paths": {
-      "*": ["types/*"]
+      "*": ["types/*"],
+      "@deboxsoft/component-webapp-react/*": ["src/*"]
     }
   },
   "include": ["src", "types"],

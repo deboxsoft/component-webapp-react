@@ -1,0 +1,11 @@
+src
+styleguide
+templates
+docs
+assets
+.*
+*.md
+*.yaml
+LICENSE
+tsconfig.json
+*.js
