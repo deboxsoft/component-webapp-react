@@ -1,5 +1,7 @@
 import React, { useContext } from 'react';
-import styled, { css, ThemeContext, ThemeProviderProps } from 'styled-components/macro';
+import styled, { css, ThemeContext, ThemeProvider, ThemeProviderProps } from 'styled-components/macro';
+import { useActive, useLinkProps } from 'react-navi';
+import { LinkProps } from 'react-navi/dist/types/Link';
 import { navbarLinkTheme, NavbarLinkTheme } from './types';
 import { NavLinkStyled } from '../navigation/NavLink';
 import { NavLinkStyledProps } from '@deboxsoft/component-webapp-react/navigation/types';
@@ -11,7 +13,7 @@ export interface NavbarLinkStyledProps
   brand?: boolean;
 }
 
-interface NavbarLinkProps extends Partial<NavbarLinkStyledProps> {
+interface NavbarLinkProps extends Partial<Omit<NavbarLinkStyledProps, keyof LinkProps>>, LinkProps {
   children?: string;
 }
 
@@ -42,10 +44,12 @@ const NavbarLinkStyled = styled(NavLinkStyled).attrs<NavbarLinkStyledProps>(prop
   ${brandCss}
 `;
 
-export const NavbarLink = ({ theme: themeProps, ...attribs }: NavbarLinkProps) => {
+export const NavbarLink = ({ theme: themeProps, href, active, ...attribs }: NavbarLinkProps) => {
+  const linkActive = useActive(href);
+  const linkProps = useLinkProps({ href });
   const themeContext = useContext(ThemeContext);
   const theme = themeProps || themeContext.navbarLink;
-  return <NavbarLinkStyled theme={theme} {...attribs} />;
+  return <NavbarLink active={active || (active === undefined && linkActive) } {...attribs} {...linkProps} />;
 };
 
 NavbarLinkStyled.defaultProps = {

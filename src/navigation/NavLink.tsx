@@ -1,11 +1,12 @@
 import React, { useContext } from 'react';
-import styled, { css, ThemeContext } from 'styled-components/macro';
+import styled, { css, ThemeContext, ThemeProvider } from 'styled-components/macro';
 import { ImagesResponsive, StyledThemeProps } from '../types';
 import { NavLinkStyledProps, NavLinkTheme, navLinkTheme } from './types';
-import { Link } from './Link';
+import { useLinkProps, useActive } from 'react-navi';
+import { LinkProps } from 'react-navi/dist/types/Link';
 import { layoutUtils } from '../utils';
 
-interface NavLinkProps extends Partial<NavLinkStyledProps> {
+interface NavLinkProps extends Partial<Omit<NavLinkStyledProps, keyof LinkProps>>, LinkProps {
   children: React.ReactNode;
 }
 
@@ -42,7 +43,7 @@ const colorsCss = ({ theme, disabled, active }: NavLinkStyledProps) => {
   `;
 };
 
-export const NavLinkStyled = styled(Link)<NavLinkStyledProps>`
+export const NavLinkStyled = styled.a<NavLinkStyledProps>`
   display: block;
   padding: ${({ theme }) => layoutUtils.positioning(theme.padding)};
   &:hover,
@@ -56,8 +57,10 @@ NavLinkStyled.defaultProps = {
   theme: navLinkTheme
 };
 
-export const NavLink = ({ theme: themeProps, ...attribs }: NavLinkProps) => {
+export const NavLink = ({ theme: themeProps, href, active, ...attribs }: NavLinkProps) => {
+  const linkActive = useActive(href);
+  const linkProps = useLinkProps({ href });
   const themeContext = useContext(ThemeContext);
   const theme = themeProps || themeContext.navLink;
-  return <NavLinkStyled theme={theme} {...attribs} />;
+  return <NavLinkStyled active={active || (active === undefined && linkActive)} {...attribs} {...linkProps} />;
 };
