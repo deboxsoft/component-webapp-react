@@ -1,3 +1,12 @@
+import {IconSizeKey} from '../icon/types'
+
+export interface Type<T = any> {
+  info: T;
+  warning: T;
+  success: T;
+  error: T;
+}
+
 export interface Notification {
   id?: string;
   /**
@@ -13,7 +22,7 @@ export interface Notification {
   /**
    * type
    */
-  type?: string;
+  type: keyof Type;
 
   /**
    * Icon name from font awesome - default is bell-o
@@ -23,15 +32,14 @@ export interface Notification {
   /**
    * Size of the icon
    */
-  iconSize?: 'xsmall' | 'small' | 'normal' | 'large' | 'xlarge';
+  iconSize?: IconSizeKey;
 
   /**
    * Icon color
    */
   iconColor?: string;
 
-  onClose?: (notification: Notification) => void;
+  onClose?: (notification: Notification, index?: number) => void;
 
-  onClick?: (notificarion: Notification) => void;
+  onClick?: (notificarion: Notification, index?: number) => void;
 }
-export default Notification;

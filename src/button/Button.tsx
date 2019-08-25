@@ -1,17 +1,17 @@
-import React from 'react';
-import styled, { css } from 'styled-components/macro';
+import React, { useContext } from 'react';
+import styled, { css, ThemeContext } from 'styled-components/macro';
 import * as keyframes from '../keyframes';
-import { FunctionComponentWithDefault, OnClickedProps, StyledThemeTypeProps } from '../types';
-import { classNames, Devices, screenMaxWidth, layoutUtils } from '../utils';
-import { ThemeAllType, Size } from '../utils/types';
-import { ButtonTheme } from '../theme';
+import { OnClickedProps, StyledThemeTypeProps } from '../types';
+import { classNames, screenMaxWidth, layoutUtils } from '../utils';
+import { ThemeAllType, Size, SizeKey } from '../utils/types';
+import { ButtonTheme, buttonTheme } from './types';
 
 interface ButtonStyledProps extends StyledThemeTypeProps<ButtonTheme, ThemeAllType> {
   active?: boolean;
   badge?: { color?: string; value?: string | number };
   block?: boolean;
   disabled?: boolean;
-  expandScreen?: Devices;
+  expandScreen?: SizeKey;
   noRadius?: boolean;
   outline?: boolean;
   pill?: boolean;
@@ -21,13 +21,12 @@ interface ButtonStyledProps extends StyledThemeTypeProps<ButtonTheme, ThemeAllTy
 }
 
 export interface ButtonProps extends Partial<ButtonStyledProps>, OnClickedProps {
+  children?: React.ReactNode;
   className?: string;
   type: 'reset' | 'button' | 'submit';
   dropdownToggle?: boolean;
   clicked?: boolean;
 }
-
-type DefaultProps = ButtonStyledProps;
 
 const displayCss = ({ block, theme }: ButtonStyledProps) => {
   if (block) {
@@ -35,7 +34,7 @@ const displayCss = ({ block, theme }: ButtonStyledProps) => {
       display: block;
       width: 100%;
       & + & {
-        margin-top: ${theme.button.margin.blockTop};
+        margin-top: ${theme.margin.blockTop};
       }
     `;
   }
@@ -46,14 +45,14 @@ const displayCss = ({ block, theme }: ButtonStyledProps) => {
 };
 
 const boxShadowCss = ({ themeType, theme }: ButtonStyledProps) => {
-  const colors = theme.button.colors[themeType];
+  const colors = theme.colors[themeType];
   return css`
     box-shadow: 0 0 0 0.2rem ${colors && colors.boxShadow};
   `;
 };
 
 const paddingCss = ({ split, size, theme }: ButtonStyledProps) => {
-  const paddingTheme = theme.button.padding;
+  const paddingTheme = theme.padding;
   if (split && paddingTheme.split) {
     const paddingSplit = paddingTheme.split[size];
     return css`
@@ -75,7 +74,7 @@ const blockDisplay = ({ block, theme }: ButtonStyledProps) => {
       display: block;
       width: 100%;
       & + & {
-        margin-top: ${theme.button.margin.blockTop};
+        margin-top: ${theme.margin.blockTop};
       }
     `;
   }
@@ -92,7 +91,7 @@ const cursor = ({ disabled }: ButtonStyledProps) =>
   `;
 
 const color = ({ themeType, outline, theme, disabled }: ButtonStyledProps) => {
-  const colors = theme.button.colors[themeType];
+  const colors = theme.colors[themeType];
   if (outline) {
     if (disabled) {
       return css`
@@ -112,21 +111,21 @@ const color = ({ themeType, outline, theme, disabled }: ButtonStyledProps) => {
 };
 
 const fontSizeCss = ({ size = 'default', theme }: ButtonStyledProps) => {
-  const fontSize = theme.button.font.size;
+  const fontSize = theme.font.size;
   return css`
     font-size: ${fontSize && fontSize[size]};
   `;
 };
 
 const border = ({ active, disabled, outline, theme, themeType }: ButtonStyledProps) => {
-  const colors = theme.button.colors[themeType];
+  const colors = theme.colors[themeType];
   if (active) {
     return css`
-      border: ${theme.button.border.default} ${colors && colors.borderColorActive};
+      border: ${theme.border.default} ${colors && colors.borderColorActive};
     `;
   } else if (disabled) {
     return css`
-      border: ${theme.button.border.default} ${colors && colors.borderColorDisabled};
+      border: ${theme.border.default} ${colors && colors.borderColorDisabled};
     `;
   }
 
@@ -145,7 +144,7 @@ const border = ({ active, disabled, outline, theme, themeType }: ButtonStyledPro
 const borderRadiusCss = ({ pill, noRadius, theme }: ButtonStyledProps) => {
   if (pill) {
     return css`
-      border-radius: ${theme.button.borderRadius.pill};
+      border-radius: ${theme.borderRadius.pill};
     `;
   } else if (noRadius) {
     return css`
@@ -153,13 +152,13 @@ const borderRadiusCss = ({ pill, noRadius, theme }: ButtonStyledProps) => {
     `;
   }
   return css`
-    border-radius: ${theme.button.borderRadius.default};
+    border-radius: ${theme.borderRadius.default};
   `;
 };
 
-const buttonToggleCollapseCss = ({ expandScreen = 'tablet', toggleCollapse, theme }: ButtonStyledProps) => {
+const buttonToggleCollapseCss = ({ expandScreen = 'default', toggleCollapse, theme }: ButtonStyledProps) => {
   if (toggleCollapse) {
-    const { toggle } = theme.button.font;
+    const { toggle } = theme.font;
     return css`
       display: none;
       ${screenMaxWidth[expandScreen]`
@@ -172,7 +171,7 @@ const buttonToggleCollapseCss = ({ expandScreen = 'tablet', toggleCollapse, them
 };
 
 const backgroundColorCss = ({ themeType, active, outline, disabled, theme }: ButtonStyledProps) => {
-  const colors = theme.button.colors[themeType];
+  const colors = theme.colors[themeType];
   if (active) {
     return css`
       background-image: none;
@@ -249,7 +248,7 @@ const ButtonStyled = styled.button<ButtonStyledProps>`
     right: -1px;
     border-radius: inherit;
     border: 0 solid ${_props => {
-      const colors = _props.theme.button.colors.default;
+      const colors = _props.theme.colors.default;
       return colors && colors.borderColor;
     }};
     opacity: 0.4;
@@ -262,7 +261,7 @@ const ButtonStyled = styled.button<ButtonStyledProps>`
       display: inline-block;
       width: 0;
       height: 0;
-      margin-left: ${({ theme }) => theme.button.margin.dropdownToggleLeft};
+      margin-left: ${({ theme }) => theme.margin.dropdownToggleLeft};
       vertical-align: 0.255em;
       content: '';
       border-top: 0.3em solid;
@@ -286,7 +285,7 @@ const ButtonStyled = styled.button<ButtonStyledProps>`
   &.loading::after {
     animation: ${keyframes.loading} 500ms infinite linear;
     border: 2px solid ${props => {
-      const colors = props.theme.button.colors.default;
+      const colors = props.theme.colors.default;
       return colors && colors.borderColor;
     }};
     border-radius: 50%;
@@ -305,14 +304,23 @@ const ButtonStyled = styled.button<ButtonStyledProps>`
   }
 `;
 
-export const Button: FunctionComponentWithDefault<ButtonProps> = ({
+ButtonStyled.defaultProps = {
+  themeType: 'default',
+  size: 'default'
+};
+
+export const Button = ({
+  children,
   disabled,
   dropdownToggle,
   className,
   clicked,
   type,
+  theme: themeProps,
   ...attribs
 }: ButtonProps) => {
+  const themeContext = useContext(ThemeContext);
+  const theme = themeProps || themeContext.button || buttonTheme;
   return (
     <ButtonStyled
       className={classNames(className, {
@@ -321,41 +329,14 @@ export const Button: FunctionComponentWithDefault<ButtonProps> = ({
         clicked
       })}
       type={type}
+      theme={theme}
       {...attribs}
-    />
+    >
+      {children}
+    </ButtonStyled>
   );
 };
 
-export const defaultProps: DefaultProps = {
-  themeType: 'default',
-  size: 'default',
-  theme: {
-    button: {
-      font: {
-        size: {},
-        weight: {}
-      },
-      borderRadius: {},
-      colors: {},
-      margin: {},
-      padding: {},
-      border: {}
-    },
-    buttonGroup: {
-      font: {
-        size: {},
-        weight: {}
-      },
-      colors: {},
-      borderRadius: {},
-      margin: {},
-      padding: {},
-      border: {}
-    }
-  }
-};
-
-ButtonStyled.defaultProps = defaultProps;
 Button.defaultProps = {
   type: 'button'
 };

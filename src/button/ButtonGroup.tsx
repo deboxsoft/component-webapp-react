@@ -1,22 +1,22 @@
-import React from 'react';
-import styled, { css } from 'styled-components/macro';
-import { FunctionComponentWithDefault, StyledThemeTypeProps } from '../types';
-import { defaultProps } from './Button';
-import { ButtonTheme } from '../theme';
+import React, { useContext } from 'react';
+import styled, { css, ThemeContext } from 'styled-components/macro';
+import { StyledThemeTypeProps } from '../types';
+import { ButtonGroupTheme, buttonGroupTheme } from './types';
 import { ThemeAllType, Size } from '../utils/types';
 import { layoutUtils } from '../utils';
 
-interface ButtonGroupStyledProps extends StyledThemeTypeProps<ButtonTheme, ThemeAllType> {
+interface ButtonGroupStyledProps extends StyledThemeTypeProps<ButtonGroupTheme, ThemeAllType> {
   size: keyof Size;
   vertical?: boolean;
 }
 
-type DefaultProps = ButtonGroupStyledProps;
-type ButtonGroupProps = Partial<ButtonGroupStyledProps>;
+interface ButtonGroupProps extends Partial<ButtonGroupStyledProps> {
+  children?: React.ReactNode;
+}
 
 const sizeCss = ({ theme, size }: ButtonGroupStyledProps) => {
-  const paddingSize = theme.buttonGroup.padding[size];
-  const fontSize = theme.buttonGroup.font.size;
+  const paddingSize = theme.padding[size];
+  const fontSize = theme.font.size;
   return css`
     padding: ${paddingSize && layoutUtils.positioning(paddingSize)};
     font-size: ${fontSize && fontSize[size]};
@@ -58,7 +58,7 @@ const verticalCss = (props: ButtonGroupStyledProps) => {
   `;
 };
 
-export const ButtonGroup = styled.div<ButtonGroupStyledProps>`
+const ButtonGroupStyled = styled.div<ButtonGroupStyledProps>`
   position: relative;
   display: inline-flex;
   vertical-align: middle;
@@ -74,4 +74,12 @@ export const ButtonGroup = styled.div<ButtonGroupStyledProps>`
   ${verticalCss};
 `;
 
-ButtonGroup.defaultProps = defaultProps;
+export const ButtonGroup = ({ children, theme: themeProps, ...attribs }: ButtonGroupProps) => {
+  const themeContext = useContext(ThemeContext);
+  const theme = themeProps || themeContext.buttonGroup || buttonGroupTheme;
+  return (
+    <ButtonGroupStyled theme={theme} {...attribs}>
+      {children}
+    </ButtonGroupStyled>
+  );
+};

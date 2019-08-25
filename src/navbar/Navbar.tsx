@@ -1,9 +1,13 @@
 import React, { useContext } from 'react';
 import styled, { css, ThemeContext } from 'styled-components/macro';
-import { NavbarStyledProps, NavbarTheme, navbarTheme } from './types';
-import { StyledThemeTypeProps } from '../types';
+import { NavbarTheme, navbarTheme } from './types';
+import { StyledThemeProps, StyledThemeTypeProps } from '../types';
 import { layoutUtils, screenMaxWidth } from '../utils';
 import { SizeKey } from '../utils/types';
+
+export interface NavbarStyledProps extends StyledThemeProps<NavbarTheme> {
+  expand?: SizeKey;
+}
 
 interface NavbarProps extends Partial<NavbarStyledProps> {
   children: React.ReactNode;

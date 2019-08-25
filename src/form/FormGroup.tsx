@@ -1,12 +1,12 @@
-import React from 'react';
-import styled, { css } from 'styled-components/macro';
-import { FunctionComponentWithDefault, ImagesResponsive, StyledThemeProps } from '../types';
-import { FormTheme, defaultTheme } from './types';
+import React, { useContext } from 'react';
+import styled, { css, ThemeContext } from 'styled-components/macro';
+import { ImagesResponsive, StyledThemeProps } from '../types';
+import { FormGroupTheme, formGroupTheme } from './types';
 import { screenMinWidth, layoutUtils } from '../utils';
 
 import { Size } from '../utils/types';
 
-interface FormGroupStyledProps extends StyledThemeProps<FormTheme> {
+interface FormGroupStyledProps extends StyledThemeProps<FormGroupTheme> {
   sizeForm: keyof Size;
   inline: boolean;
   row: boolean;
@@ -15,9 +15,7 @@ interface FormGroupStyledProps extends StyledThemeProps<FormTheme> {
   noRadius: boolean;
 }
 
-type DefaultProps = FormGroupStyledProps;
-
-interface FormGroupProps extends FormGroupStyledProps {
+interface FormGroupProps extends Partial<FormGroupStyledProps> {
   children: React.ReactNode;
 }
 
@@ -36,12 +34,12 @@ const inlineCss = ({ inline, theme }: FormGroupStyledProps) =>
       flex: 0 0 auto;
       flex-flow: row wrap;
       align-items: center;
-      margin-bottom: ${theme.formGroup.margin.inlineBottom};
+      margin-bottom: ${theme.margin.inlineBottom};
     `
     : '';
 
 const marginCss = ({ nomb, theme, row }: FormGroupStyledProps) => {
-  const { margin } = theme.formGroup;
+  const { margin } = theme;
   if (nomb) {
     if (row) {
       return css`
@@ -59,16 +57,16 @@ const marginCss = ({ nomb, theme, row }: FormGroupStyledProps) => {
   }
   if (row) {
     return css`
-      margin-right: ${margin.nomb && margin.rowRight};
-      margin-left: ${margin.nomb && margin.rowLeft};
-      margin-bottom: ${margin.nomb && margin.bottom};
+      margin-right: ${margin.rowRight};
+      margin-left: ${margin.rowLeft};
+      margin-bottom: ${margin.bottom};
       & > div > label {
-        margin-bottom: ${margin.nomb && margin.rowDivLabelBottom};
+        margin-bottom: ${margin.rowDivLabelBottom};
       }
     `;
   }
   return css`
-    margin-bottom: ${theme.formGroup.margin.bottom};
+    margin-bottom: ${theme.margin.bottom};
   `;
 };
 
@@ -83,12 +81,12 @@ const borderRadiusCss = ({ theme, noRadius, sizeForm }: FormGroupStyledProps) =>
     & > div > input,
     & > :not(input[type='file']),
     & > div > :not(input[type='file']) {
-      border-radius: ${noRadius ? '0' : theme.formGroup.borderRadius[sizeForm]};
+      border-radius: ${noRadius ? '0' : theme.borderRadius[sizeForm]};
     }
   `;
 
 const fontSizeCss = ({ theme, sizeForm }: FormGroupStyledProps) => {
-  const fontSize = theme.formGroup.font.size;
+  const fontSize = theme.font.size;
   return css`
     & > input,
     & > div > input,
@@ -100,7 +98,7 @@ const fontSizeCss = ({ theme, sizeForm }: FormGroupStyledProps) => {
 };
 
 const paddingCss = ({ theme, sizeForm }: FormGroupStyledProps) => {
-  const padding = theme.formGroup.padding[sizeForm];
+  const padding = theme.padding[sizeForm];
   return css`
     & > label,
     & > div > label {
@@ -109,7 +107,7 @@ const paddingCss = ({ theme, sizeForm }: FormGroupStyledProps) => {
     }
     & > input,
     & > div > input {
-      padding: ${layoutUtils.space({
+      padding: ${layoutUtils.positioning({
         top: padding && padding.inputTopBottom,
         right: padding && padding.inputRight,
         bottom: padding && padding.inputTopBottom,
@@ -119,7 +117,7 @@ const paddingCss = ({ theme, sizeForm }: FormGroupStyledProps) => {
   `;
 };
 
-export const FormGroup = styled.div<FormGroupStyledProps>`
+const FormGroupStyled = styled.div<FormGroupStyledProps>`
   box-sizing: border-box;
   & > input,
   & > div > input,
@@ -136,7 +134,16 @@ export const FormGroup = styled.div<FormGroupStyledProps>`
   ${paddingCss}
 `;
 
-FormGroup.defaultProps = {
-  theme: defaultTheme,
+FormGroupStyled.defaultProps = {
   sizeForm: 'default'
+};
+
+export const FormGroup = ({ children, theme: themeProps, ...attribs }: FormGroupProps) => {
+  const themeContext = useContext(ThemeContext);
+  const theme = themeProps || themeContext.formGroup || formGroupTheme;
+  return (
+    <FormGroupStyled theme={theme} {...attribs}>
+      {children}
+    </FormGroupStyled>
+  );
 };

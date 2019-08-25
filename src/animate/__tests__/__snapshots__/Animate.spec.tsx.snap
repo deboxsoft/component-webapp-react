@@ -1,0 +1,22 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Animate Test should render no error 1`] = `
+.c0 {
+  -webkit-animation-name: gTcftA;
+  animation-name: gTcftA;
+  -webkit-animation-duration: 500ms;
+  animation-duration: 500ms;
+  -webkit-animation-timing-function: linear;
+  animation-timing-function: linear;
+  -webkit-animation-delay: 0s;
+  animation-delay: 0s;
+  -webkit-animation-iteration-count: 0;
+  animation-iteration-count: 0;
+}
+
+<div>
+  <div
+    class="c0"
+  />
+</div>
+`;

@@ -1,39 +1,45 @@
-import React from 'react';
-import styled, { css } from 'styled-components/macro';
-import { FunctionComponentWithDefault, ImagesResponsive, StyledThemeProps } from '../types';
-import { FormTheme, defaultTheme } from './types';
+import React, { useContext } from 'react';
+import styled, { css, ThemeContext } from 'styled-components/macro';
+import { ImagesResponsive, StyledThemeProps } from '../types';
+import { FormCheckTheme, formCheckTheme } from './types';
 import { Size } from '../utils/types';
 
-interface FormCheckStyledProps extends StyledThemeProps<FormTheme> {
+interface FormCheckStyledProps extends StyledThemeProps<FormCheckTheme> {
   inline?: boolean;
 }
 
-type DefaultProps = FormCheckStyledProps;
+interface FormCheckProps extends Partial<FormCheckStyledProps> {
+  children?: React.ReactNode;
+}
 
-export const FormCheck = styled.div<FormCheckStyledProps>`
+const FormCheckStyled = styled.div<FormCheckStyledProps>`
   position: relative;
   box-sizing: border-box;
   & > label {
-    margin-bottom: ${({ theme }) => theme.formCheck.margin.labelBottom};
+    margin-bottom: ${({ theme }) => theme.margin.labelBottom};
   }
   & > input {
     position: relative;
-    margin-top: ${({ theme }) => theme.formCheck.margin.inputTop};
-    margin-right: ${({ theme }) => theme.formCheck.margin.inputRight};
-    margin-left: ${({ theme }) => theme.formCheck.margin.inputLeft};
+    margin-top: ${({ theme }) => theme.margin.inputTop};
+    margin-right: ${({ theme }) => theme.margin.inputRight};
+    margin-left: ${({ theme }) => theme.margin.inputLeft};
   }
   display: ${({ inline }) => (inline ? 'inline-flex' : 'block')};
   ${({ inline, theme }) =>
     inline &&
     css`
       align-items: center;
-      padding-left: ${theme.formCheck.padding.inlineLeft};
-      margin-right: ${theme.formCheck.margin.inlineRight};
+      padding-left: ${theme.padding.inlineLeft};
+      margin-right: ${theme.margin.inlineRight};
     `}
 `;
 
-FormCheck.defaultProps = {
-  theme: defaultTheme
+export const FormCheck = ({ children, theme: themeProps, ...attribs }: FormCheckProps) => {
+  const themeContext = useContext(ThemeContext);
+  const theme = themeProps || themeContext.formCheck || formCheckTheme;
+  return (
+    <FormCheckStyled theme={theme} {...attribs}>
+      {children}
+    </FormCheckStyled>
+  );
 };
-
-const test = <FormCheck />;

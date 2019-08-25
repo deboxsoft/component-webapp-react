@@ -5,11 +5,14 @@
 </p>
 <p align="center">Minimal <b>UI Kit</b> for Preact, with reusable components.</p>
 
-[![Build Status](https://travis-ci.org/ajainvivek/preact-fluid.svg?branch=master)](https://travis-ci.org/ajainvivek/preact-fluid)
+[![PeerDependencies](https://img.shields.io/david/peer/ajainvivek/preact-fluid.svg)](https://david-dm.org/ajainvivek/preact-fluid#info=peerDependencies&view=list)
 [![Dependencies](https://img.shields.io/david/ajainvivek/preact-fluid.svg)](https://david-dm.org/ajainvivek/preact-fluid)
 [![DevDependencies](https://img.shields.io/david/dev/ajainvivek/preact-fluid.svg)](https://david-dm.org/ajainvivek/preact-fluid#info=devDependencies&view=list)
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 [![HitCount](http://hits.dwyl.io/ajainvivek/preact-fluid.svg)](http://hits.dwyl.io/ajainvivek/preact-fluid)
+
+<iframe src="https://ghbtns.com/github-btn.html?user=ajainvivek&repo=preact-fluid&type=star&count=true&size=large" frameborder="0" scrolling="0" width="160px" height="30px"></iframe>
+<iframe src="https://ghbtns.com/github-btn.html?user=ajainvivek&type=follow&count=true&size=large" frameborder="0" scrolling="0" width="220px" height="30px"></iframe>
 
 ## Installation
 
@@ -23,21 +26,17 @@ npm install preact-fluid --save
 
 Here is a quick example to get you started, it's all you need:
 
-```jsx
+```jsx static
 import { render } from 'preact';
-import { Button } from '@deboxsoft/component-web-react';
+import { Button } from 'preact-fluid';
 
 function App() {
   return (
     <Button>
-      Hello World
-    </Button>
+            Hello World
+        </Button>
   );
 }
 
 render(<App />, document.querySelector('#app'));
 ```
-
-## Documentation
-
-Check out our [documentation website](https://ajainvivek.github.io/preact-fluid/).

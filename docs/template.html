@@ -1,0 +1,62 @@
+
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700" rel="stylesheet">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <title><%=htmlWebpackPlugin.options.title%></title>
+    <script>
+		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+				(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+			m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+		})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+		ga('create', '', 'auto');
+		ga('send', 'pageview');
+    </script>
+    <style>
+        *, html, body, div, p {
+            font-family: 'Roboto', sans-serif;
+        }
+
+        #introduction {
+            display: none;
+        }
+
+        .layout-example section {
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .layout-example .middle-content {
+            height: 100px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .animate-btn-wrapper {
+            margin: 20px 0;
+        }
+
+        .form-wrapper > div {
+            margin: 20px 10px;
+        }
+
+        .icon-wrapper i {
+            padding: 20px;
+        }
+
+        .notification-wrapper button {
+            margin: 10px;
+        }
+
+        h4 {
+            margin: 5px 0;
+            font-weight: 400;
+        }
+    </style>
+</head>
+<body>
+<div id="app"></div>
+</body>
+</html>

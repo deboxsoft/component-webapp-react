@@ -1,7 +1,7 @@
 /* eslint-disable */
 import { Color, Size, ThemeType, Font, Position } from '../utils/types';
 
-export interface FormCheck {
+export interface FormCheckTheme {
   margin: {
     labelBottom?: string;
     inputLeft?: string;
@@ -13,43 +13,44 @@ export interface FormCheck {
     inlineLeft?: string;
   };
 }
-export interface FormCheckInput {
+export interface FormCheckInputTheme {
   colors: {
     colorDisabled?: string;
-    colorDisabledLabel?: string;
+    colorLabelDisabled?: string;
   };
   margin: {
     top: string;
     left: string;
   };
 }
-export interface FormControl {
+export interface FormControlTheme {
   colors: Color & {
     borderFocusColor?: string;
     boxShadowFocus?: string;
+    boxShadowValidColor?: string;
+    boxShadowInvalidColor?: string;
     placeholderColor?: string;
     backgroundDisabledReadonlyColor?: string;
     borderValidColor?: string;
-    formControlBoxShadowValidColor?: string;
-    formControlBoxShadowInvalidColor?: string;
     borderInvalidColor?: string;
   };
   borderRadius: Size;
-  border: Size;
+  border: string;
   boxShadow?: string;
-  padding: Size<Position>;
+  padding: Size<Position | string>;
   font: Font<Size>;
-  height: Size;
-}
-export interface FormControlPlainText {
-  colors: Color;
-  padding: Size<Position>;
-  margin: {
-    nomb?: string;
+  height: {
+    select: Size;
+    default?: string;
   };
 }
-export interface FormControlFile {}
-export interface FormGroup {
+export interface FormControlPlainTextTheme {
+  colors: Color;
+  padding: Position | string;
+  margin: Position | string;
+}
+export interface FormControlFileTheme {}
+export interface FormGroupTheme {
   margin: {
     nomb?: {
       noRow?: string;
@@ -75,88 +76,84 @@ export interface FormGroup {
   }>;
 }
 
-export interface FormText {
+export interface FormTextTheme {
   colors: {
     colorMuted?: string;
   };
-  marginTop?: string;
-}
-
-export interface FormInline {}
-export interface InputGroup {
-  borderRadius: Size;
-  font: Font<Size>;
-  padding: Position;
-  text: {
-    border?: string;
-    borderRadius?: string;
-    padding: Position;
-    margin: {
-      bottom?: string;
-      radioCheckbox: Position;
-    };
-    font: Font;
-    colors: Color;
+  margin: {
+    top?: string;
   };
 }
-export interface InputGroupText {}
-export interface InputGroupAppend {}
-export interface InputGroupPrepend {}
 
-export interface FormTheme {
-  formCheck: FormCheck;
-  formCheckInput: FormCheckInput;
-  formControl: FormControl;
-  formControlPlainText: FormControlPlainText;
-  formControlFile: FormControlFile;
-  formGroup: FormGroup;
-  formText: FormText;
-  formInline: FormInline;
-  inputGroup: InputGroup;
-  inputGroupText: InputGroupText;
-  inputGroupAppend: InputGroupAppend;
-  inputGroupPrepend: InputGroupPrepend;
+export interface FormInlineTheme {}
+export interface InputGroupTheme {
+  borderRadius: Size;
+  font: Font<Size>;
+  padding: Size<Position | string>;
+  colors: Color;
 }
+export interface InputGroupTextTheme extends InputGroupTheme {
+  border?: string;
+  margin: {
+    bottom?: string;
+    radioCheckbox: Position | string;
+  };
+}
+export interface InputGroupAppendTheme {}
+export interface InputGroupPrependTheme {}
 
-export const defaultTheme: FormTheme = {
-  formCheck: {
-    margin: {},
-    padding: {}
-  },
-  formCheckInput: {
-    colors: {},
-    margin: {
-      left: '',
-      top: ''
-    }
-  },
-  formControl: {
-    border: {},
-    borderRadius: {},
-    colors: {},
-    font: { weight: {}, size: {} },
-    height: {},
-    padding: {}
-  },
-  formControlPlainText: { colors: {}, padding: {}, margin: {} },
-  formControlFile: {},
-  formGroup: { margin: {}, borderRadius: {}, padding: {}, font: { size: {}, weight: {} } },
-  formText: { colors: {} },
-  formInline: {},
-  inputGroup: {
-    padding: {},
-    font: { size: {} },
-    borderRadius: {},
-    text: {
-      margin: {
-        radioCheckbox: {}
-      },
-      colors: {},
-      font: {},
-      padding: {}
-    }
-  },
-  inputGroupText: {},
-  inputGroupAppend: {},
-  inputGroupPrepend: {}
+export const formCheckTheme: FormCheckTheme = {
+  margin: {},
+  padding: {}
 };
+export const formCheckInputTheme: FormCheckInputTheme = {
+  colors: {},
+  margin: {
+    left: '',
+    top: ''
+  }
+};
+export const formControlTheme: FormControlTheme = {
+  border: '0',
+  borderRadius: {},
+  colors: {},
+  font: { size: {} },
+  height: {
+    select: {}
+  },
+  padding: {}
+};
+export const formControlPlainTextTheme: FormControlPlainTextTheme = {
+  colors: {},
+  padding: {},
+  margin: {}
+};
+export const formControlFileTheme: FormControlFileTheme = {};
+export const formGroupTheme: FormGroupTheme = {
+  margin: {},
+  borderRadius: {},
+  padding: {},
+  font: { size: {} }
+};
+export const formTextTheme: FormTextTheme = {
+  colors: {},
+  margin: {}
+};
+export const formInlineTheme: FormInlineTheme = {};
+export const inputGroupTheme: InputGroupTheme = {
+  padding: {},
+  font: { size: {} },
+  borderRadius: {},
+  colors: {}
+};
+export const inputGroupTextTheme: InputGroupTextTheme = {
+  padding: {},
+  font: { size: {} },
+  borderRadius: {},
+  margin: {
+    radioCheckbox: {}
+  },
+  colors: {}
+};
+export const inputGroupAppendTheme: InputGroupAppendTheme = {};
+export const inputGroupPrependTheme: InputGroupPrependTheme = {};

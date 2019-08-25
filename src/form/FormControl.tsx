@@ -1,11 +1,11 @@
-import React from 'react';
-import styled, { css } from 'styled-components/macro';
-import { FunctionComponentWithDefault, ImagesResponsive, StyledThemeProps } from '../types';
-import { FormTheme, defaultTheme } from './types';
-import { classNames, screenMinWidth } from '../utils';
+import React, { useContext } from 'react';
+import styled, { css, ThemeContext } from 'styled-components/macro';
+import { ImagesResponsive, StyledThemeProps } from '../types';
+import { FormControlTheme, formControlTheme } from './types';
+import { classNames, screenMinWidth, layoutUtils } from '../utils';
 import { Size } from '../utils/types';
 
-interface FormControlStyledProps extends StyledThemeProps<FormTheme> {
+interface FormControlStyledProps extends StyledThemeProps<FormControlTheme> {
   status: 'valid' | 'invalid' | undefined | false;
   disabled: boolean;
   readonly: boolean;
@@ -17,25 +17,25 @@ interface FormControlStyledProps extends StyledThemeProps<FormTheme> {
   noRadius: boolean;
 }
 
-type DefaultProps = FormControlStyledProps;
-
-interface FormControlProps extends FormControlStyledProps {
-  children: React.ReactNode;
+interface FormControlProps
+  extends Partial<FormControlStyledProps>,
+    React.InputHTMLAttributes<HTMLInputElement> {
+  children?: React.ReactNode;
 }
 
 const backgroundColorCss = ({ theme, disabled, readonly }: FormControlStyledProps) => {
   if (disabled || readonly) {
     return css`
-      background-color: ${theme.formControl.colors.backgroundDisabledReadonlyColor};
+      background-color: ${theme.colors.backgroundDisabledReadonlyColor};
       &:focus {
-        background-color: ${theme.formControl.colors.backgroundDisabledReadonlyColor};
+        background-color: ${theme.colors.backgroundDisabledReadonlyColor};
       }
     `;
   }
   return css`
-    background-color: ${theme.formControl.colors.backgroundColor};
+    background-color: ${theme.colors.backgroundColor};
     &:focus {
-      background-color: ${theme.formControl.colors.backgroundColor};
+      background-color: ${theme.colors.backgroundColor};
     }
   `;
 };
@@ -43,23 +43,23 @@ const backgroundColorCss = ({ theme, disabled, readonly }: FormControlStyledProp
 const borderCss = ({ theme, status, sizeForm = 'default' }: FormControlStyledProps) => {
   if (status === 'valid') {
     return css`
-      border-color: ${theme.formControl.colors.borderValidColor};
+      border-color: ${theme.colors.borderValidColor};
       &:focus {
-        border-color: ${theme.formControl.colors.borderValidColor};
+        border-color: ${theme.colors.borderValidColor};
       }
     `;
   } else if (status === 'invalid') {
     return css`
-      border-color: ${theme.formControl.colors.borderInvalidColor};
+      border-color: ${theme.colors.borderInvalidColor};
       &:focus {
-        border-color: ${theme.formControl.colors.borderInvalidColor};
+        border-color: ${theme.colors.borderInvalidColor};
       }
     `;
   }
   return css`
-    border: ${theme.formControl.border[sizeForm]} ${theme.formControl.colors.borderColor};
+    border: ${theme.border} ${theme.colors.borderColor};
     &:focus {
-      border-color: ${theme.formControl.colors.borderFocusColor};
+      border-color: ${theme.colors.borderFocusColor};
     }
   `;
 };
@@ -68,20 +68,19 @@ const boxShadowCss = ({ status, theme }: FormControlStyledProps) => {
   if (status === 'valid') {
     return css`
       &:focus {
-        box-shadow: ${theme.formControl.boxShadow} ${theme.formControl.colors.formControlBoxShadowValidColor};
+        box-shadow: ${theme.boxShadow} ${theme.colors.boxShadowValidColor};
       }
     `;
   } else if (status === 'invalid') {
     return css`
       &:focus {
-        box-shadow: ${theme.formControl.boxShadow}
-          ${theme.formControl.colors.formControlBoxShadowInvalidColor};
+        box-shadow: ${theme.boxShadow} ${theme.colors.boxShadowInvalidColor};
       }
     `;
   }
   return css`
     &:focus {
-      box-shadow: ${theme.formControl.boxShadow};
+      box-shadow: ${theme.boxShadow};
     }
   `;
 };
@@ -106,24 +105,24 @@ const formInlineCss = ({ inline }: FormControlStyledProps) =>
       vertical-align: middle;
 `;
 
-export const FormControl = styled.input<FormControlStyledProps>`
+const FormControlStyled = styled.input<FormControlStyledProps>`
   background-clip: padding-box;
   border-radius: ${({ theme, noRadius, sizeForm }) => {
-    return !noRadius ? theme.formControl.borderRadius[sizeForm] : '0';
+    return !noRadius ? theme.borderRadius[sizeForm] : '0';
   }};
   box-sizing: border-box;
-  color: ${({ theme }) => theme.formControl.colors.color};
+  color: ${({ theme }) => theme.colors.color};
   display: block;
   font-size: ${({ theme, sizeForm }) => {
-    const fontSize = theme.formControl.font.size || {};
+    const fontSize = theme.font.size || {};
     return fontSize[sizeForm];
   }};
   height: ${({ theme, select, multiple, sizeForm }) =>
-    select && !multiple && theme.formControl.height[sizeForm]};
+    select && !multiple ? theme.height.select[sizeForm] : theme.height.default};
   line-height: 1.5;
   padding: ${({ theme, sizeForm }) => {
-    const padding = theme.formControl.padding.default;
-    return padding && `${padding.top || 0} ${padding.right || 0} ${padding.bottom || 0} ${padding.left || 0}`;
+    const padding = theme.padding.default;
+    return padding && layoutUtils.positioning(padding);
   }};
   transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
   width: 100%;
@@ -132,12 +131,12 @@ export const FormControl = styled.input<FormControlStyledProps>`
     border: 0;
   }
   &:focus {
-    color: ${({ theme }) => theme.formControl.colors.color};
+    color: ${({ theme }) => theme.colors.color};
     outline: 0;
-    box-shadow: 0 0 0 0.2rem ${({ theme }) => theme.formControl.colors.boxShadowFocus};
+    box-shadow: 0 0 0 0.2rem ${({ theme }) => theme.colors.boxShadowFocus};
   }
   &::placeholder {
-    color: ${({ theme }) => theme.formControl.colors.placeholderColor};
+    color: ${({ theme }) => theme.colors.placeholderColor};
     opacity: 1;
   }
   
@@ -148,7 +147,16 @@ export const FormControl = styled.input<FormControlStyledProps>`
   ${formInlineCss}
 `;
 
-FormControl.defaultProps = {
-  theme: defaultTheme,
+FormControlStyled.defaultProps = {
   sizeForm: 'default'
+};
+
+export const FormControl = ({ children, theme: themeProps, ...attribs }: FormControlProps) => {
+  const themeContext = useContext(ThemeContext);
+  const theme = themeProps || themeContext.formControl || formControlTheme;
+  return (
+    <FormControlStyled theme={theme} {...attribs}>
+      {children}
+    </FormControlStyled>
+  );
 };

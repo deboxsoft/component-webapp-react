@@ -2,5 +2,19 @@
   "extends": "@deboxsoft/devel/typescript-react",
   "env": {
     "browser": true
+  },
+  "rules": {
+    "no-nested-ternary": 0,
+    "no-restricted-imports": [
+      2,
+      {
+        "paths": [{
+          "name": "styled-components",
+          "message": "Please import from styled-components/macro."
+        }],
+        "patterns": ["!styled-components/macro"]
+      }
+    ],
+    "@typescript-eslint/no-explicit-any": 0
   }
 }

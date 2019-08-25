@@ -26,13 +26,3 @@ export const navbarLinkTheme: NavbarLinkTheme = Object.assign({
     font: {}
   }
 });
-
-export interface NavbarStyledProps extends StyledThemeProps<NavbarTheme> {
-  expand?: SizeKey;
-}
-
-export interface NavbarLinkStyledProps
-  extends Partial<Omit<NavLinkStyledProps, 'theme'>>,
-    StyledThemeProps<NavbarLinkTheme> {
-  brand?: boolean;
-}

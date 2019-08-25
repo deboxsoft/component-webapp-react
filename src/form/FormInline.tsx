@@ -1,21 +1,29 @@
-import React from 'react';
-import styled, { css } from 'styled-components/macro';
-import { FunctionComponentWithDefault, ImagesResponsive, StyledThemeProps } from '../types';
-import { FormTheme, defaultTheme } from './types';
+import React, { useContext } from 'react';
+import styled, { css, ThemeContext } from 'styled-components/macro';
+import { ImagesResponsive, StyledThemeProps } from '../types';
+import { FormInlineTheme, formInlineTheme } from './types';
 import { Size } from '../utils/types';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-interface FormInlineStyledProps extends StyledThemeProps<FormTheme> {}
+interface FormInlineStyledProps extends StyledThemeProps<FormInlineTheme> {}
 
-type DefaultProps = FormInlineStyledProps;
+interface FormInlineProps extends Partial<FormInlineStyledProps> {
+  children?: React.ReactNode;
+}
 
-export const FormInline = styled.div<FormInlineStyledProps>`
+const FormInlineStyled = styled.div<FormInlineStyledProps>`
   display: flex;
   flex-flow: row wrap;
   align-items: center;
   box-sizing: border-box;
 `;
 
-FormInline.defaultProps = {
-  theme: defaultTheme
+export const FormInline = ({ children, theme: themeProps, ...attribs }: FormInlineProps) => {
+  const themeContext = useContext(ThemeContext);
+  const theme = themeProps || themeContext.formInline || formInlineTheme;
+  return (
+    <FormInlineStyled theme={theme} {...attribs}>
+      {children}
+    </FormInlineStyled>
+  );
 };

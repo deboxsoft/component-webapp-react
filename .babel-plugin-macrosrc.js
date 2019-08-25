@@ -1,5 +1,12 @@
-const macroConfig = process.env.NODE_ENV === 'production'
-  ? {}
-  : {};
+const styledComponents =
+  process.env.NODE_ENV === 'production'
+    ? {
+      pure: true
+    }
+    : {
+      pure: true,
+      transpiledTemplateLiterals: true,
+      displayName: false
+    };
 
-module.exports = macroConfig;
+module.exports = { styledComponents };

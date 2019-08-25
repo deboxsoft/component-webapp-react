@@ -1,7 +1,15 @@
 import React, { useContext } from 'react';
 import styled, { css, ThemeContext, ThemeProviderProps } from 'styled-components/macro';
-import { NavbarLinkStyledProps, navbarLinkTheme, NavbarLinkTheme } from './types';
+import { navbarLinkTheme, NavbarLinkTheme } from './types';
 import { NavLinkStyled } from '../navigation/NavLink';
+import { NavLinkStyledProps } from '@deboxsoft/component-webapp-react/navigation/types';
+import { StyledThemeProps } from '@deboxsoft/component-webapp-react/types';
+
+export interface NavbarLinkStyledProps
+  extends Partial<Omit<NavLinkStyledProps, 'theme'>>,
+    StyledThemeProps<NavbarLinkTheme> {
+  brand?: boolean;
+}
 
 interface NavbarLinkProps extends Partial<NavbarLinkStyledProps> {
   children?: string;

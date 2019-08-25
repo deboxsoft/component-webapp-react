@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import styled, { css, ThemeContext } from 'styled-components/macro';
-import { FunctionComponentWithDefault, ImagesResponsive, StyledThemeProps } from '../types';
+import { ImagesResponsive, StyledThemeProps } from '../types';
 import { NavStyledProps, navTheme, NavTheme } from './types';
 import { layoutUtils, screenMaxWidth } from '../utils';
 

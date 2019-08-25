@@ -1,23 +1,27 @@
-import React from 'react';
-import styled, { css } from 'styled-components/macro';
-import { FunctionComponentWithDefault, ImagesResponsive, StyledThemeProps } from '../types';
-import { FormTheme, defaultTheme } from './types';
+import React, { useContext } from 'react';
+import styled, { css, ThemeContext } from 'styled-components/macro';
+import { ImagesResponsive, StyledThemeProps } from '../types';
+import { FormControlFileTheme, formControlFileTheme } from './types';
 import { Size } from '../utils/types';
 
-type FormControlFileStyledProps = StyledThemeProps<FormTheme>;
+type FormControlFileStyledProps = StyledThemeProps<FormControlFileTheme>;
 
-type DefaultProps = FormControlFileStyledProps;
-
-interface FormControlFileProps extends FormControlFileStyledProps {
+interface FormControlFileProps extends Partial<FormControlFileStyledProps> {
   children: React.ReactNode;
 }
 
-export const FormControlFile = styled.input<FormControlFileStyledProps>`
+const FormControlFileStyled = styled.input<FormControlFileStyledProps>`
   display: block;
   width: 100%;
   box-sizing: border-box;
 `;
 
-FormControlFile.defaultProps = {
-  theme: defaultTheme
+export const FormControlFile = ({ children, theme: themeProps, ...attribs }: FormControlFileProps) => {
+  const themeContext = useContext(ThemeContext);
+  const theme = themeProps || themeContext.formControlFile || formControlFileTheme;
+  return (
+    <FormControlFileStyled theme={theme} {...attribs}>
+      {children}
+    </FormControlFileStyled>
+  );
 };

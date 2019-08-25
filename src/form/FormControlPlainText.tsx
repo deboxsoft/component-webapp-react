@@ -1,34 +1,45 @@
-import React from 'react';
-import styled, { css } from 'styled-components/macro';
-import { FunctionComponentWithDefault, ImagesResponsive, StyledThemeProps } from '../types';
-import { FormTheme, defaultTheme } from './types';
+import React, { useContext } from 'react';
+import styled, { css, ThemeContext } from 'styled-components/macro';
+import { ImagesResponsive, StyledThemeProps } from '../types';
+import { FormControlPlainTextTheme, formControlPlainTextTheme } from './types';
 import { Size } from '../utils/types';
+import { layoutUtils } from '../utils';
 
-interface FormControlPlainTextStyledProps extends StyledThemeProps<FormTheme> {
-  sizeForm: keyof Size;
+interface FormControlPlainTextStyledProps extends StyledThemeProps<FormControlPlainTextTheme> {
   inline: boolean;
   nomb: boolean;
 }
 
-type DefaultProps = FormControlPlainTextStyledProps;
+interface FormControlPlainTextProps extends Partial<FormControlPlainTextStyledProps> {
+  children?: React.ReactNode;
+}
 
-export const FormControlPlainText = styled.input<FormControlPlainTextStyledProps>`
+const FormControlPlainTextStyled = styled.input<FormControlPlainTextStyledProps>`
   display: ${({ inline }) => (inline ? 'inline-block' : 'block')};
   width: 100%;
-  padding: ${({ theme, sizeForm }) => {
-    const padding = theme.formControlPlainText.padding[sizeForm];
-    return padding && `${padding.top || 0} ${padding.right || 0} ${padding.bottom || 0} ${padding.left || 0}`;
-  }};
-  margin-bottom: ${({ theme, nomb }) => nomb && theme.formControlPlainText.margin.nomb};
+  padding: ${({ theme }) => layoutUtils.positioning(theme.padding)};
+  margin-bottom: ${({ theme, nomb }) => nomb && '0'};
   line-height: 1.5;
-  background-color: ${({ theme }) => theme.formControlPlainText.colors.backgroundColor};
-  border: solid ${({ theme }) => theme.formControlPlainText.colors.borderColor};
+  background-color: ${({ theme }) => theme.colors.backgroundColor};
+  border: solid ${({ theme }) => theme.colors.borderColor};
   border-width: 1px 0;
   box-sizing: border-box;
 `;
 
-FormControlPlainText.defaultProps = {
-  theme: defaultTheme,
-  sizeForm: 'default',
+FormControlPlainTextStyled.defaultProps = {
   inline: false
+};
+
+export const FormControlPlainText = ({
+  children,
+  theme: themeProps,
+  ...attribs
+}: FormControlPlainTextProps) => {
+  const themeContext = useContext(ThemeContext);
+  const theme = themeProps || themeContext.formControlPlainText || formControlPlainTextTheme;
+  return (
+    <FormControlPlainTextStyled theme={theme} {...attribs}>
+      {children}
+    </FormControlPlainTextStyled>
+  );
 };
