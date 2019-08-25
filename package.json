@@ -1,6 +1,6 @@
 {
   "name": "@deboxsoft/component-webapp-react",
-  "version": "0.1.0-devel.3",
+  "version": "0.1.0",
   "description": "",
   "main": "index.js",
   "module": "index.js",
@@ -30,12 +30,15 @@
   "keywords": [],
   "author": "Nurdiansyah",
   "devDependencies": {
-    "@deboxsoft/devel-react": "^3.1.4",
+    "@deboxsoft/babel": "^3.0.7",
+    "@deboxsoft/devel": "^3.0.3",
+    "@deboxsoft/eslint-config-devel": "^3.0.3",
     "@testing-library/react": "^8.0.1",
     "@types/color": "^3.0.0",
     "@types/history": "^4.7.2",
     "@types/jest": "^24.0.11",
     "@types/lodash": "^4.14.123",
+    "@types/node": "^12.7.2",
     "@types/react": "^16.8.17",
     "@types/react-dom": "^16.8.3",
     "@types/react-helmet": "^5.0.8",
@@ -57,6 +60,7 @@
     "color": "^3.1.1",
     "immutable": "^4.0.0-rc.12",
     "navi": "^0.12.6",
-    "react-helmet": "^5.2.1"
+    "react-helmet": "^5.2.1",
+    "react-navi": "^0.13.6"
   }
 }
