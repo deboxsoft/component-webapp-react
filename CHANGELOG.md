@@ -2,10 +2,8 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## <small>1.0.4 (2019-08-25)</small>
+## <small>1.0.5 (2019-08-26)</small>
 
-* feature: react-navi base ([b444a53](https://github.com/deboxsoft/component-webapp-react/commit/b444a53))
-* fix : setting ([9f4a9ee](https://github.com/deboxsoft/component-webapp-react/commit/9f4a9ee))
 
 
 
