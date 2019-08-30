@@ -1,4 +1,5 @@
 import { Size, Position, Color, LinkColor, ThemeAllType, ThemeType, Font } from '../utils/types';
+import * as breadcrumb from '../breadcrumb/types';
 import * as button from '../button/types';
 import * as card from '../card/types';
 import * as navbar from '../navbar/types';
@@ -117,6 +118,7 @@ export interface TooltipTheme {
   tooltip: {};
 }
 export interface Theme {
+  breadcrumbTheme?: breadcrumb.BreadcrumbTheme;
   button?: button.ButtonTheme;
   buttonGroup?: button.ButtonGroupTheme;
   card?: card.CardTheme;
@@ -125,6 +127,7 @@ export interface Theme {
   cardHeader?: card.CardHeaderTheme;
   cardImage?: card.CardImageTheme;
   cardTitle?: card.CardTitleTheme;
+  cardText?: card.CardTextTheme;
   container?: layout.ContainerTheme;
   formCheck?: form.FormCheckTheme;
   formCheckInput?: form.FormCheckInputTheme;
