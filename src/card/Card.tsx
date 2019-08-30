@@ -30,6 +30,7 @@ const cardStyled = (props: CardStyledProps) => {
   return css`
     background-color: ${colors && colors.backgroundColor};
     border: ${theme.border[size]};
+    box-sizing: border-box;
     display: flex;
     flex-direction: column;
     box-shadow: 0 1px 4px 0 rgba(12, 12, 13, 0.1);
@@ -55,8 +56,8 @@ CardStyled.defaultProps = {
   size: 'default'
 };
 
-export const Card = ({ children, theme: themeProps, ...props }: CardProps) => {
+export const Card = ({ children, theme: themeProps, ...attribs }: CardProps) => {
   const themeContext = useContext(ThemeContext);
   const theme = themeProps || themeContext.card || cardTheme;
-  return <CardStyled {...props}>{children}</CardStyled>;
+  return <CardStyled theme={theme} {...attribs}>{children}</CardStyled>;
 };
