@@ -2,8 +2,10 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## <small>1.0.8 (2019-08-26)</small>
+## <small>1.0.9 (2019-08-30)</small>
 
+* feature: types card and breadcrump ([ee28c2b](https://github.com/deboxsoft/component-webapp-react/commit/ee28c2b))
+* fix: CardTheme types ([0d7319d](https://github.com/deboxsoft/component-webapp-react/commit/0d7319d))
 
 
 
