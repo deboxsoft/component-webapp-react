@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.1.0](https://github.com/deboxsoft/component-webapp-react/compare/v1.1.0-beta.4...v1.1.0) (2019-10-23)
+
+
+### Bug Fixes
+
+* release script ([099fd5a](https://github.com/deboxsoft/component-webapp-react/commit/099fd5a))
+
 ## [1.1.0-beta.4](https://github.com/deboxsoft/component-webapp-react/compare/v1.1.0-beta.3...v1.1.0-beta.4) (2019-09-02)
 
 ## [1.1.0-beta.3](https://github.com/deboxsoft/component-webapp-react/compare/v1.1.0-beta.2...v1.1.0-beta.3) (2019-09-02)
