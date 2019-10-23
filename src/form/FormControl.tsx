@@ -121,7 +121,7 @@ const FormControlStyled = styled.input<FormControlStyledProps>`
     select && !multiple ? theme.height.select[sizeForm] : theme.height.default};
   line-height: 1.5;
   padding: ${({ theme, sizeForm }) => {
-    const padding = theme.padding.default;
+    const padding = theme.padding[sizeForm];
     return padding && layoutUtils.positioning(padding);
   }};
   transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
