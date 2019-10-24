@@ -1,3 +1,6 @@
+import { Form as _Form } from 'react-final-form';
+
+export const Form = _Form;
 export * from './FormField';
 export * from './FormCheck';
 export * from './FormCheckInput';
