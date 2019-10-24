@@ -19,7 +19,7 @@ const Error = ({ name = '' }: ErrorProps) => {
   return touched && error ? <span>{error}</span> : null;
 };
 
-export default ({ name, label, ...attribs }: Props) => {
+export const FormField = ({ name, label, ...attribs }: Props) => {
   const id = useRef(`field-${nanoid()}`);
   return (
     <div>
