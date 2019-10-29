@@ -19,6 +19,6 @@
       "@deboxsoft/component-webapp-react/*": ["src/*"]
     }
   },
-  "include": ["src", "types"],
+  "include": ["src", "types", "tests"],
   "exclude": ["**/__tests__", "**/__mocks__"]
 }

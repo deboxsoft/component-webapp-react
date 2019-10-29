@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import { Animate, shake } from '../index';
+import { Animate, shake } from '../../src/animate/index';
 import 'jest-styled-components';
 
 
